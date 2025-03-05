@@ -52,3 +52,5 @@
 2. Install dependencies with `npm install`
 3. Add your TMDB API key to `.env.local`
 4. Run the development server with `npm run dev`
+5. env.local have these value : `NEXT_PUBLIC_TMDB_API_KEY=""`
+                                `TMDB_BASE_URL="https://api.themoviedb.org/3"`
