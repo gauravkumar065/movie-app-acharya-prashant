@@ -1,84 +1,87 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
+import { useInfiniteQuery } from "@tanstack/react-query"
+import { useSearchParams } from "next/navigation"
+import { fetchMovies } from "@/lib/tmdb"
 import MovieCard from "@/components/movie-card"
-import { Skeleton } from "@/components/ui/skeleton"
-import type { Movie } from "@/lib/tmdb"
+import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
+import { useIntersection } from "@/hooks/use-intersection"
 
-interface MovieGridProps {
-  initialMovies: Movie[]
-  genres?: { [key: number]: string }
-  loadMoreMovies?: (page: number) => Promise<Movie[]>
-}
+export default function MovieGrid() {
+  const searchParams = useSearchParams()
+  const query = searchParams.get("query") || ""
+  const genre = searchParams.get("genre") || ""
+  const year = searchParams.get("year") || ""
+  const rating = searchParams.get("rating") || ""
 
-export default function MovieGrid({ initialMovies, genres = {}, loadMoreMovies }: MovieGridProps) {
-  const [movies, setMovies] = useState<Movie[]>(initialMovies)
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const observerTarget = useRef<HTMLDivElement>(null)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
+  const isIntersecting = useIntersection(loadMoreRef, {
+    rootMargin: "200px",
+  })
 
-  const loadMore = useCallback(async () => {
-    if (!loadMoreMovies || loading || !hasMore) return
-
-    setLoading(true)
-    try {
-      const nextPage = page + 1
-      const newMovies = await loadMoreMovies(nextPage)
-
-      if (newMovies.length === 0) {
-        setHasMore(false)
-      } else {
-        setMovies((prev) => [...prev, ...newMovies])
-        setPage(nextPage)
-      }
-    } catch (error) {
-      console.error("Error loading more movies:", error)
-    } finally {
-      setLoading(false)
-    }
-  }, [loadMoreMovies, page, loading, hasMore])
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
+    queryKey: ["movies", query, genre, year, rating],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchMovies({
+        page: pageParam,
+        query,
+        genre: genre ? Number(genre) : undefined,
+        year: year ? Number(year) : undefined,
+        rating: rating ? Number(rating) : undefined,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined),
+  })
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMore()
-        }
-      },
-      { threshold: 0.1 },
+    if (isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  if (status === "pending") {
+    return (
+      <div className="flex justify-center p-8">
+        <Loader2 className="animate-spin" />
+      </div>
     )
+  }
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
-    }
+  if (status === "error") {
+    return <div className="text-center p-8 text-destructive">Error loading movies</div>
+  }
 
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current)
-      }
-    }
-  }, [loadMore, hasMore])
+  const movies = data.pages.flatMap((page) => page.results)
+
+  if (movies.length === 0) {
+    return (
+      <div className="text-center p-8 text-muted-foreground">
+        No movies found. Try adjusting your search or filters.
+      </div>
+    )
+  }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-      {movies.map((movie) => (
-        <MovieCard key={movie.id} movie={movie} genres={genres} />
-      ))}
+    <div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {movies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
 
-      {loading && (
-        <>
-          {[...Array(5)].map((_, i) => (
-            <div key={`skeleton-${i}`} className="space-y-3">
-              <Skeleton className="h-[300px] w-full rounded-md" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-2/3" />
-            </div>
-          ))}
-        </>
-      )}
-
-      {hasMore && loadMoreMovies && <div ref={observerTarget} className="h-20 w-full" />}
+      <div ref={loadMoreRef} className="flex justify-center p-8">
+        {isFetchingNextPage ? (
+          <Loader2 className="animate-spin" />
+        ) : hasNextPage ? (
+          <Button variant="outline" onClick={() => fetchNextPage()}>
+            Load More
+          </Button>
+        ) : (
+          <p className="text-sm text-muted-foreground">No more movies to load</p>
+        )}
+      </div>
     </div>
   )
 }
