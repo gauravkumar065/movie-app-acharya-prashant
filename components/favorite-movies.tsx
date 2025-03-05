@@ -17,7 +17,7 @@ export default function FavoriteMovies() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {favorites.map((movie) => (
-        <MovieCard key={movie.id} movie={movie} />
+        <MovieCard key={`fav-${movie.id}`} movie={movie} />
       ))}
     </div>
   )

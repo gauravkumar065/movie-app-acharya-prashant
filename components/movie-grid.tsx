@@ -53,7 +53,20 @@ export default function MovieGrid() {
     return <div className="text-center p-8 text-destructive">Error loading movies</div>
   }
 
-  const movies = data.pages.flatMap((page) => page.results)
+  // Create a map to deduplicate movies by ID
+  const moviesMap = new Map()
+
+  data.pages.forEach((page) => {
+    page.results.forEach((movie) => {
+      // Only add the movie if it's not already in the map
+      if (!moviesMap.has(movie.id)) {
+        moviesMap.set(movie.id, movie)
+      }
+    })
+  })
+
+  // Convert the map back to an array
+  const movies = Array.from(moviesMap.values())
 
   if (movies.length === 0) {
     return (
@@ -67,7 +80,7 @@ export default function MovieGrid() {
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
+          <MovieCard key={`grid-${movie.id}`} movie={movie} />
         ))}
       </div>
 
