@@ -9,6 +9,10 @@
 - **API**: The Movie Database (TMDB)
 
 
+## Architecture
+
+![Alt text](https://jgxzlyexzm.ufs.sh/f/tKKL1YC9XfJ4ZFbUPjNxfrZ6htzRlb2pImgv3VAC89Kj5UNi)
+
 ## Key Features
 
 - **Movie Discovery**: Browse popular movies with infinite scrolling
