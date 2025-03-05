@@ -1,66 +1,72 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
-import { fetchGenres } from "@/lib/tmdb"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchGenres } from "@/lib/tmdb";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 
 export default function FilterSidebar() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [genre, setGenre] = useState(searchParams.get("genre") || "")
-  const [year, setYear] = useState(searchParams.get("year") || "")
-  const [rating, setRating] = useState(searchParams.get("rating") || "")
+  const [genre, setGenre] = useState(searchParams.get("genre") || "");
+  const [year, setYear] = useState(searchParams.get("year") || "");
+  const [rating, setRating] = useState(searchParams.get("rating") || "");
 
   const { data: genres = [] } = useQuery({
     queryKey: ["genres"],
     queryFn: fetchGenres,
-  })
+  });
 
-  const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: 50 }, (_, i) => currentYear - i)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
   const applyFilters = () => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams.toString());
 
     if (genre) {
-      params.set("genre", genre)
+      params.set("genre", genre);
     } else {
-      params.delete("genre")
+      params.delete("genre");
     }
 
     if (year) {
-      params.set("year", year)
+      params.set("year", year);
     } else {
-      params.delete("year")
+      params.delete("year");
     }
 
     if (rating) {
-      params.set("rating", rating)
+      params.set("rating", rating);
     } else {
-      params.delete("rating")
+      params.delete("rating");
     }
 
-    router.push(`/?${params.toString()}`)
-  }
+    router.push(`/?${params.toString()}`);
+  };
 
   const resetFilters = () => {
-    setGenre("")
-    setYear("")
-    setRating("")
+    setGenre("");
+    setYear("");
+    setRating("");
 
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete("genre")
-    params.delete("year")
-    params.delete("rating")
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("genre");
+    params.delete("year");
+    params.delete("rating");
 
-    router.push(`/?${params.toString()}`)
-  }
+    router.push(`/?${params.toString()}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -72,7 +78,7 @@ export default function FilterSidebar() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="0">All Genres</SelectItem>
-            {genres.map((genre) => (
+            {genres.map((genre: any) => (
               <SelectItem key={genre.id} value={genre.id.toString()}>
                 {genre.name}
               </SelectItem>
@@ -101,7 +107,9 @@ export default function FilterSidebar() {
       <div className="space-y-4">
         <div className="flex justify-between">
           <Label htmlFor="rating">Minimum Rating</Label>
-          <span className="text-sm text-muted-foreground">{rating ? `${rating}/10` : "Any"}</span>
+          <span className="text-muted-foreground text-sm">
+            {rating ? `${rating}/10` : "Any"}
+          </span>
         </div>
         <Slider
           id="rating"
@@ -120,6 +128,5 @@ export default function FilterSidebar() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
-
