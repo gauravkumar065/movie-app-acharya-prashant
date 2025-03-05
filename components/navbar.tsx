@@ -1,26 +1,28 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Film, Heart, Moon, Sun } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useTheme } from "next-themes"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Film, Heart, Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="border-b">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
-          <Film className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">MovieFlix</span>
+          <Film className="text-primary h-6 w-6" />
+          <span className="text-xl font-bold">Woodmovies</span>
         </Link>
 
         <nav className="flex items-center gap-2">
           <Link href="/" passHref>
-            <Button variant={pathname === "/" ? "default" : "ghost"}>Discover</Button>
+            <Button variant={pathname === "/" ? "default" : "ghost"}>
+              Discover
+            </Button>
           </Link>
           <Link href="/favorites" passHref>
             <Button variant={pathname === "/favorites" ? "default" : "ghost"}>
@@ -40,6 +42,5 @@ export default function Navbar() {
         </nav>
       </div>
     </header>
-  )
+  );
 }
-
