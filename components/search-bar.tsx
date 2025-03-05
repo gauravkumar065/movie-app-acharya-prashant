@@ -17,13 +17,13 @@ export default function SearchBar() {
   const [isSearching, setIsSearching] = useState(false);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Sample popular searches - in a real app, these could come from an API
   const popularSearches = [
     "Action",
     "Marvel",
-    "2023",
+    "2025",
     "Oscar Winners",
     "Sci-Fi",
+    "Comedy",
   ];
 
   useEffect(() => {
@@ -38,7 +38,6 @@ export default function SearchBar() {
 
     router.push(`/?${params.toString()}`);
 
-    // Set a small timeout to show the loading state
     const timeout = setTimeout(() => {
       setIsSearching(false);
     }, 300);

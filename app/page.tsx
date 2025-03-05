@@ -29,7 +29,9 @@ export default function HomePage() {
         </header>
 
         <div className="relative mb-8">
-          <SearchBar />
+          <Suspense fallback={<MovieGridSkeleton />}>
+            <SearchBar />
+          </Suspense>
         </div>
 
         <Tabs defaultValue="all" className="mb-6">
@@ -55,7 +57,9 @@ export default function HomePage() {
                   </Badge>
                 </div>
                 <ScrollArea className="h-[calc(100vh-220px)]">
-                  <FilterSidebar />
+                  <Suspense fallback={<MovieGridSkeleton />}>
+                    <FilterSidebar />
+                  </Suspense>
                 </ScrollArea>
               </div>
             </div>
