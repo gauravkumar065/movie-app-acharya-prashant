@@ -9,7 +9,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { getImageUrl } from "@/lib/utils"
+import { getImageUrl, getGenreColor } from "@/lib/utils"
 import type { Movie } from "@/lib/tmdb"
 
 interface MovieCardProps {
@@ -80,7 +80,7 @@ export default function MovieCard({ movie, genres }: MovieCardProps) {
               {movie.genre_ids.slice(0, 2).map(
                 (genreId) =>
                   genres[genreId] && (
-                    <Badge key={genreId} variant="outline" className="text-xs">
+                    <Badge key={genreId} className={`text-xs ${getGenreColor(genreId)}`}>
                       {genres[genreId]}
                     </Badge>
                   ),

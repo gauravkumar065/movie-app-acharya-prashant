@@ -13,9 +13,9 @@ export default function Header() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
+  // Updated navigation items - removed search page
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/search", label: "Search" },
     { href: "/favorites", label: "Favorites" },
   ]
 
@@ -24,7 +24,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <Film className="h-6 w-6" />
+            <Film className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">MovieFlix</span>
           </Link>
         </div>
@@ -49,7 +49,7 @@ export default function Header() {
         <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Toggle menu">
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? <X className="h-5 w-5 text-red-500" /> : <Menu className="h-5 w-5 text-primary" />}
           </Button>
         </div>
       </div>
